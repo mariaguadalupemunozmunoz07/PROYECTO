@@ -17,7 +17,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
                 <a href="{{ route('libros.create') }}"
-                    class="inline-block mb-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                    style="display: inline-block; margin-bottom: 16px; padding: 10px 20px; background-color: #a855f7; color: white; font-weight: 600; border-radius: 8px; text-decoration: none;">
                     + Nuevo Libro
                 </a>
 
@@ -41,18 +41,24 @@
                                     {{ $libro->cantidad_disponible }} / {{ $libro->cantidad_total }}
                                 </td>
                                 <td class="py-2">
-                                    <a href="{{ route('libros.edit', $libro) }}"
-                                        class="text-blue-600 hover:underline">Editar</a>
+                                    <div style="display: flex; flex-direction: column; gap: 6px; width: 100px;">
 
-                                    <form action="{{ route('libros.destroy', $libro) }}" method="POST"
-                                        class="inline"
-                                        onsubmit="return confirm('¿Seguro que deseas eliminar este libro?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline ml-2">
-                                            Eliminar
-                                        </button>
-                                    </form>
+                                        <a href="{{ route('libros.edit', $libro) }}"
+                                            style="display: block; text-align: center; padding: 6px 12px; background-color: #fbcfe8; color: #9d174d; font-weight: 600; font-size: 14px; border-radius: 8px; text-decoration: none;">
+                                            Editar
+                                        </a>
+
+                                        <form action="{{ route('libros.destroy', $libro) }}" method="POST"
+                                            onsubmit="return confirm('¿Seguro que deseas eliminar este libro?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                style="width: 100%; padding: 6px 12px; background-color: #fbcfe8; color: #9d174d; font-weight: 600; font-size: 14px; border-radius: 8px; border: none; cursor: pointer;">
+                                                Eliminar
+                                            </button>
+                                        </form>
+
+                                    </div>
                                 </td>
                             </tr>
                         @empty

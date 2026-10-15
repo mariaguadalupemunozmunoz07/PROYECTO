@@ -17,8 +17,11 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-purple-50">
             <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <a href="{{ route('login') }}" style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none;">
+                    <x-application-logo style="width: 140px; height: 140px;" />
+                    <span style="font-weight: 600; font-size: 13px; letter-spacing: 0.2em; color: #6D28D9; text-align: center;">
+                        BIBLIOTECA MUNICIPAL DE MIRANDA
+                    </span>
                 </a>
             </div>
 

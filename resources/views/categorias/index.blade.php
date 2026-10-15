@@ -17,7 +17,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
                 <a href="{{ route('categorias.create') }}"
-                    class="inline-block mb-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                    style="display: inline-block; margin-bottom: 16px; padding: 10px 20px; background-color: #a855f7; color: white; font-weight: 600; border-radius: 8px; text-decoration: none;">
                     + Nueva Categoría
                 </a>
 
@@ -35,18 +35,24 @@
                                 <td class="py-2">{{ $categoria->nombre }}</td>
                                 <td class="py-2">{{ $categoria->descripcion }}</td>
                                 <td class="py-2">
-                                    <a href="{{ route('categorias.edit', $categoria) }}"
-                                        class="text-blue-600 hover:underline">Editar</a>
+                                    <div style="display: flex; flex-direction: column; gap: 6px; width: 100px;">
 
-                                    <form action="{{ route('categorias.destroy', $categoria) }}" method="POST"
-                                        class="inline"
-                                        onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline ml-2">
-                                            Eliminar
-                                        </button>
-                                    </form>
+                                        <a href="{{ route('categorias.edit', $categoria) }}"
+                                            style="display: block; text-align: center; padding: 6px 12px; background-color: #fbcfe8; color: #9d174d; font-weight: 600; font-size: 14px; border-radius: 8px; text-decoration: none;">
+                                            Editar
+                                        </a>
+
+                                        <form action="{{ route('categorias.destroy', $categoria) }}" method="POST"
+                                            onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                style="width: 100%; padding: 6px 12px; background-color: #fbcfe8; color: #9d174d; font-weight: 600; font-size: 14px; border-radius: 8px; border: none; cursor: pointer;">
+                                                Eliminar
+                                            </button>
+                                        </form>
+
+                                    </div>
                                 </td>
                             </tr>
                         @empty

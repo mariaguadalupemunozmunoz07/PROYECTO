@@ -16,6 +16,10 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('catalogo')" :active="request()->routeIs('catalogo')">
+                        {{ __('Catálogo') }}
+                    </x-nav-link>
+
                     @if (Auth::user()->role === 'admin')
                         <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
                             {{ __('Categorías') }}
@@ -23,6 +27,14 @@
 
                         <x-nav-link :href="route('libros.index')" :active="request()->routeIs('libros.*')">
                             {{ __('Libros') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('prestamos.index')" :active="request()->routeIs('prestamos.index')">
+                            {{ __('Préstamos') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('prestamos.mis')" :active="request()->routeIs('prestamos.mis')">
+                            {{ __('Mis préstamos') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -81,6 +93,10 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
+            <x-responsive-nav-link :href="route('catalogo')" :active="request()->routeIs('catalogo')">
+                {{ __('Catálogo') }}
+            </x-responsive-nav-link>
+
             @if (Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
                     {{ __('Categorías') }}
@@ -88,6 +104,14 @@
 
                 <x-responsive-nav-link :href="route('libros.index')" :active="request()->routeIs('libros.*')">
                     {{ __('Libros') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('prestamos.index')" :active="request()->routeIs('prestamos.index')">
+                    {{ __('Préstamos') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('prestamos.mis')" :active="request()->routeIs('prestamos.mis')">
+                    {{ __('Mis préstamos') }}
                 </x-responsive-nav-link>
             @endif
         </div>

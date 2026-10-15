@@ -108,4 +108,16 @@ class LibroController extends Controller
 
         return redirect()->route('libros.index')->with('success', 'Libro eliminado correctamente.');
     }
+
+    /**
+     * Display the public catalog, grouped by category.
+     */
+    public function catalogo()
+    {
+        $categorias = Categoria::with(['libros' => function ($query) {
+            $query->orderBy('titulo');
+        }])->orderBy('nombre')->get();
+
+        return view('libros.catalogo', compact('categorias'));
+    }
 }
