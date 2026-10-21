@@ -1,52 +1,72 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+@php
+    $activo = 'border-bottom: 3px solid #7c3aed; color: #4c1d95; font-weight: 700;';
+    $normal = 'border-bottom: 3px solid transparent; color: #6d28d9; font-weight: 500;';
+    $base = 'display: inline-flex; align-items: center; padding: 4px 4px 0 4px; font-size: 14px; text-decoration: none;';
+    $esAdmin = Auth::user()->role === 'admin';
+@endphp
+
+<style>
+    .menu-usuario { background-color: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 8px; overflow: hidden; }
+    .menu-usuario-item {
+        display: block; width: 100%; text-align: left; padding: 10px 18px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        background: none; border: none; cursor: pointer;
+    }
+    .menu-usuario-perfil { color: #4c1d95; }
+    .menu-usuario-perfil:hover { background-color: #e9d5ff; }
+    .menu-usuario-salir { color: #9d174d; }
+    .menu-usuario-salir:hover { background-color: #fbcfe8; }
+    .menu-usuario-linea { height: 1px; background-color: #d8b4fe; margin: 0; border: none; }
+</style>
+
+<nav x-data="{ open: false }" style="background-color: #e9d5ff; border-bottom: 1px solid #d8b4fe;">
+    <!-- Menú principal -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <x-application-logo style="width: 40px; height: 40px;" />
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                <!-- Enlaces -->
+                <div class="hidden sm:flex" style="gap: 32px; margin-left: 40px;">
+                    <a href="{{ route('dashboard') }}"
+                       style="{{ $base }} {{ request()->routeIs('dashboard') ? $activo : $normal }}">Panel</a>
 
-                    <x-nav-link :href="route('catalogo')" :active="request()->routeIs('catalogo')">
-                        {{ __('Catálogo') }}
-                    </x-nav-link>
+                    <a href="{{ route('catalogo') }}"
+                       style="{{ $base }} {{ request()->routeIs('catalogo') ? $activo : $normal }}">Catálogo</a>
 
-                    @if (Auth::user()->role === 'admin')
-                        <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
-                            {{ __('Categorías') }}
-                        </x-nav-link>
+                    @if ($esAdmin)
+                        <a href="{{ route('categorias.index') }}"
+                           style="{{ $base }} {{ request()->routeIs('categorias.*') ? $activo : $normal }}">Categorías</a>
 
-                        <x-nav-link :href="route('libros.index')" :active="request()->routeIs('libros.*')">
-                            {{ __('Libros') }}
-                        </x-nav-link>
+                        <a href="{{ route('libros.index') }}"
+                           style="{{ $base }} {{ request()->routeIs('libros.*') ? $activo : $normal }}">Libros</a>
 
-                        <x-nav-link :href="route('prestamos.index')" :active="request()->routeIs('prestamos.index')">
-                            {{ __('Préstamos') }}
-                        </x-nav-link>
+                        <a href="{{ route('prestamos.index') }}"
+                           style="{{ $base }} {{ request()->routeIs('prestamos.index') || request()->routeIs('prestamos.edit') ? $activo : $normal }}">Préstamos</a>
+
+                        <a href="{{ route('multas.index') }}"
+                           style="{{ $base }} {{ request()->routeIs('multas.index') ? $activo : $normal }}">Multas</a>
                     @else
-                        <x-nav-link :href="route('prestamos.mis')" :active="request()->routeIs('prestamos.mis')">
-                            {{ __('Mis préstamos') }}
-                        </x-nav-link>
+                        <a href="{{ route('prestamos.mis') }}"
+                           style="{{ $base }} {{ request()->routeIs('prestamos.mis') ? $activo : $normal }}">Mis préstamos</a>
+
+                        <a href="{{ route('multas.mis') }}"
+                           style="{{ $base }} {{ request()->routeIs('multas.mis') ? $activo : $normal }}">Mis multas</a>
                     @endif
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Usuario -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button style="display: inline-flex; align-items: center; padding: 8px 12px; font-size: 14px; font-weight: 600; color: #4c1d95; background-color: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 8px;">
                             <div>{{ Auth::user()->name }}</div>
-
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -56,27 +76,23 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
+                        <div class="menu-usuario">
+                            <a href="{{ route('profile.edit') }}" class="menu-usuario-item menu-usuario-perfil">Perfil</a>
 
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+                            <hr class="menu-usuario-linea">
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="menu-usuario-item menu-usuario-salir">Cerrar sesión</button>
+                            </form>
+                        </div>
                     </x-slot>
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
+            <!-- Botón de menú (celular) -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="open = ! open" style="padding: 8px; border-radius: 6px; color: #6d28d9;">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -86,59 +102,35 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
+    <!-- Menú en celular -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+        <div style="padding: 8px 0;">
+            <a href="{{ route('dashboard') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('dashboard') ? '700' : '500' }};">Panel</a>
+            <a href="{{ route('catalogo') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('catalogo') ? '700' : '500' }};">Catálogo</a>
 
-            <x-responsive-nav-link :href="route('catalogo')" :active="request()->routeIs('catalogo')">
-                {{ __('Catálogo') }}
-            </x-responsive-nav-link>
-
-            @if (Auth::user()->role === 'admin')
-                <x-responsive-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
-                    {{ __('Categorías') }}
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('libros.index')" :active="request()->routeIs('libros.*')">
-                    {{ __('Libros') }}
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('prestamos.index')" :active="request()->routeIs('prestamos.index')">
-                    {{ __('Préstamos') }}
-                </x-responsive-nav-link>
+            @if ($esAdmin)
+                <a href="{{ route('categorias.index') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('categorias.*') ? '700' : '500' }};">Categorías</a>
+                <a href="{{ route('libros.index') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('libros.*') ? '700' : '500' }};">Libros</a>
+                <a href="{{ route('prestamos.index') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('prestamos.index') ? '700' : '500' }};">Préstamos</a>
+                <a href="{{ route('multas.index') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('multas.index') ? '700' : '500' }};">Multas</a>
             @else
-                <x-responsive-nav-link :href="route('prestamos.mis')" :active="request()->routeIs('prestamos.mis')">
-                    {{ __('Mis préstamos') }}
-                </x-responsive-nav-link>
+                <a href="{{ route('prestamos.mis') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('prestamos.mis') ? '700' : '500' }};">Mis préstamos</a>
+                <a href="{{ route('multas.mis') }}" style="display:block; padding: 8px 16px; color: #4c1d95; font-weight: {{ request()->routeIs('multas.mis') ? '700' : '500' }};">Mis multas</a>
             @endif
         </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+        <div style="padding: 8px 0; border-top: 1px solid #d8b4fe;">
+            <div style="padding: 4px 16px;">
+                <div style="font-weight: 600; color: #4c1d95;">{{ Auth::user()->name }}</div>
+                <div style="font-size: 13px; color: #6d28d9;">{{ Auth::user()->email }}</div>
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+            <a href="{{ route('profile.edit') }}" style="display:block; padding: 8px 16px; color: #4c1d95;">Perfil</a>
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" style="display:block; width:100%; text-align:left; padding: 8px 16px; color: #9d174d; background:none; border:none;">Cerrar sesión</button>
+            </form>
         </div>
     </div>
 </nav>

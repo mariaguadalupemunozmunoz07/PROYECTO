@@ -33,7 +33,22 @@
                                         <p class="text-sm text-gray-600">{{ $libro->autor }}</p>
 
                                         @if ($libro->descripcion)
-                                            <p class="text-sm text-gray-500 mt-2">{{ Str::limit($libro->descripcion, 100) }}</p>
+                                            <div x-data="{ abierto: false, cortado: false }"
+                                                 x-init="$nextTick(() => { cortado = $refs.texto.scrollHeight > $refs.texto.clientHeight + 1 })"
+                                                 @resize.window="if (! abierto) { cortado = $refs.texto.scrollHeight > $refs.texto.clientHeight + 1 }"
+                                                 class="mt-2">
+                                                <p x-ref="texto"
+                                                   class="text-sm text-gray-500"
+                                                   style="white-space: pre-line;"
+                                                   :style="abierto ? '' : 'display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;'">{{ $libro->descripcion }}</p>
+
+                                                <button type="button"
+                                                        x-show="cortado || abierto"
+                                                        @click="abierto = ! abierto"
+                                                        x-text="abierto ? 'Ver menos' : 'Ver más'"
+                                                        style="margin-top: 4px; color: #be185d; font-size: 13px; font-weight: 600; background: none; border: none; cursor: pointer;">
+                                                </button>
+                                            </div>
                                         @endif
                                     </div>
 

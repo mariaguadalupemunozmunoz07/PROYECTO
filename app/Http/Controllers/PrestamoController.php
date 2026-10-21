@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Libro;
+use App\Models\Multa;
 use App\Models\Prestamo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -95,16 +96,48 @@ class PrestamoController extends Controller
     }
 
     /**
-     * Mark a loan as returned (admin).
+     * Mark a loan as returned (admin). Si se devuelve tarde, se genera una multa.
      */
     public function devolver(Prestamo $prestamo)
     {
+        // Evita devolver dos veces el mismo préstamo (y sumar dos veces el ejemplar)
+        if ($prestamo->estado === 'devuelto') {
+            return redirect()->route('prestamos.index')->with('success', 'Este préstamo ya estaba devuelto.');
+        }
+
+        $hoy = now();
+
         $prestamo->update([
             'estado' => 'devuelto',
-            'fecha_devolucion_real' => now(),
+            'fecha_devolucion_real' => $hoy,
         ]);
 
         $prestamo->libro->increment('cantidad_disponible');
+
+        // Días de retraso: positivo si hoy es después de la fecha estimada
+        $diasRetraso = (int) $prestamo->fecha_devolucion_estimada
+            ->copy()
+            ->startOfDay()
+            ->diffInDays($hoy->copy()->startOfDay(), false);
+
+        if ($diasRetraso > 0) {
+            $valor = $diasRetraso * Multa::VALOR_POR_DIA;
+
+            Multa::firstOrCreate(
+                ['prestamo_id' => $prestamo->id],
+                [
+                    'user_id' => $prestamo->user_id,
+                    'dias_retraso' => $diasRetraso,
+                    'valor' => $valor,
+                    'estado' => 'pendiente',
+                ]
+            );
+
+            return redirect()->route('prestamos.index')->with(
+                'success',
+                'Préstamo devuelto con '.$diasRetraso.' día(s) de retraso. Se generó una multa de $'.number_format($valor, 0, ',', '.').'.'
+            );
+        }
 
         return redirect()->route('prestamos.index')->with('success', 'Préstamo marcado como devuelto.');
     }
