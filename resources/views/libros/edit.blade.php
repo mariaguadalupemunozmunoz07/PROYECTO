@@ -28,13 +28,6 @@
                     </div>
 
                     <div class="mt-4">
-                        <x-input-label for="isbn" :value="__('ISBN (opcional)')" />
-                        <x-text-input id="isbn" class="block mt-1 w-full" type="text" name="isbn"
-                            :value="old('isbn', $libro->isbn)" />
-                        <x-input-error :messages="$errors->get('isbn')" class="mt-2" />
-                    </div>
-
-                    <div class="mt-4">
                         <x-input-label for="categoria_id" :value="__('Categoría')" />
                         <select id="categoria_id" name="categoria_id" required
                             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">

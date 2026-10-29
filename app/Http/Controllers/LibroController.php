@@ -36,7 +36,6 @@ class LibroController extends Controller
         $request->validate([
             'titulo' => ['required', 'string', 'max:255'],
             'autor' => ['required', 'string', 'max:255'],
-            'isbn' => ['nullable', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
             'categoria_id' => ['required', 'exists:categorias,id'],
             'cantidad_total' => ['required', 'integer', 'min:1'],
@@ -45,7 +44,6 @@ class LibroController extends Controller
         Libro::create([
             'titulo' => $request->titulo,
             'autor' => $request->autor,
-            'isbn' => $request->isbn,
             'descripcion' => $request->descripcion,
             'categoria_id' => $request->categoria_id,
             'cantidad_total' => $request->cantidad_total,
@@ -78,22 +76,28 @@ class LibroController extends Controller
      */
     public function update(Request $request, Libro $libro)
     {
+        // Ejemplares que están prestados en este momento
+        $prestados = $libro->cantidad_total - $libro->cantidad_disponible;
+        $minimo = max(1, $prestados);
+
         $request->validate([
             'titulo' => ['required', 'string', 'max:255'],
             'autor' => ['required', 'string', 'max:255'],
-            'isbn' => ['nullable', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
             'categoria_id' => ['required', 'exists:categorias,id'],
-            'cantidad_total' => ['required', 'integer', 'min:1'],
+            'cantidad_total' => ['required', 'integer', 'min:'.$minimo],
+        ], [
+            'cantidad_total.min' => 'La cantidad de ejemplares no puede ser menor a '.$minimo.' (hay '.$prestados.' prestados en este momento).',
         ]);
 
         $libro->update([
             'titulo' => $request->titulo,
             'autor' => $request->autor,
-            'isbn' => $request->isbn,
             'descripcion' => $request->descripcion,
             'categoria_id' => $request->categoria_id,
             'cantidad_total' => $request->cantidad_total,
+            // Los disponibles se recalculan: total nuevo menos los que siguen prestados
+            'cantidad_disponible' => $request->cantidad_total - $prestados,
         ]);
 
         return redirect()->route('libros.index')->with('success', 'Libro actualizado correctamente.');

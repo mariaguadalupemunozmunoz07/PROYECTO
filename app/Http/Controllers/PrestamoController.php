@@ -96,7 +96,7 @@ class PrestamoController extends Controller
     }
 
     /**
-     * Mark a loan as returned (admin). Si se devuelve tarde, se genera una multa.
+     * Mark a loan as returned (admin). Si se devuelve tarde, se genera o se actualiza la multa.
      */
     public function devolver(Prestamo $prestamo)
     {
@@ -123,19 +123,25 @@ class PrestamoController extends Controller
         if ($diasRetraso > 0) {
             $valor = $diasRetraso * Multa::VALOR_POR_DIA;
 
-            Multa::firstOrCreate(
-                ['prestamo_id' => $prestamo->id],
-                [
-                    'user_id' => $prestamo->user_id,
-                    'dias_retraso' => $diasRetraso,
-                    'valor' => $valor,
-                    'estado' => 'pendiente',
-                ]
-            );
+            // Puede que la multa ya exista (se creó mientras estaba vencido)
+            $multa = Multa::firstOrNew(['prestamo_id' => $prestamo->id]);
+
+            // Si ya estaba pagada no se cambia; si no, se deja con los días finales
+            if (! $multa->exists || $multa->estado !== 'pagada') {
+                $multa->user_id = $prestamo->user_id;
+                $multa->dias_retraso = $diasRetraso;
+                $multa->valor = $valor;
+
+                if (! $multa->exists) {
+                    $multa->estado = 'pendiente';
+                }
+
+                $multa->save();
+            }
 
             return redirect()->route('prestamos.index')->with(
                 'success',
-                'Préstamo devuelto con '.$diasRetraso.' día(s) de retraso. Se generó una multa de $'.number_format($valor, 0, ',', '.').'.'
+                'Préstamo devuelto con '.$diasRetraso.' día(s) de retraso. La multa es de $'.number_format($multa->valor, 0, ',', '.').'.'
             );
         }
 

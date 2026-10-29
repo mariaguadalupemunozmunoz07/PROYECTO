@@ -12,6 +12,9 @@ class MultaController extends Controller
      */
     public function index()
     {
+        // Actualiza las multas de los libros vencidos antes de mostrar la lista
+        Multa::sincronizar();
+
         $multas = Multa::with(['user', 'prestamo.libro'])
             ->orderByRaw("estado = 'pagada'")
             ->orderByDesc('created_at')
@@ -44,6 +47,9 @@ class MultaController extends Controller
      */
     public function misMultas()
     {
+        // Actualiza solo las multas de este usuario
+        Multa::sincronizar(Auth::id());
+
         $multas = Multa::with('prestamo.libro')
             ->where('user_id', Auth::id())
             ->orderByDesc('created_at')
@@ -54,3 +60,4 @@ class MultaController extends Controller
         return view('multas.mis-multas', compact('multas', 'totalPendiente'));
     }
 }
+    
